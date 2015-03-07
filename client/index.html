@@ -11,11 +11,11 @@
       padding-top: 60px;
     }
     /*html, body, #map-canvas { height: 100%; margin: 0; padding: 0;}*/
-    
+
     #map-canvas {
       width: 100%;
       /*width:600px;*/
-      
+
       height: 200px;
     }
     #autocomplete {
@@ -64,25 +64,24 @@
       map = new google.maps.Map(document.getElementById('map-canvas'),
         mapOptions);
 
-      autocomplete = new google.maps.places.Autocomplete(
-        /** @type {HTMLInputElement} */
-        (document.getElementById('autocomplete')), {
-          //types: ['(cities)'],
-          // componentRestrictions: {
-          // 'country': 'au'
-          // }
-        });
+      // autocomplete = new google.maps.places.Autocomplete(
+      //   /** @type {HTMLInputElement} */
+      //   (document.getElementById('autocomplete')), {
+      //     //types: ['(cities)'],
+      //     // componentRestrictions: {
+      //     // 'country': 'au'
+      //     // }
+      //   });
 
       google.maps.event.addListener(map, 'click', function(event) {
-        GetFeatureInfoXY(event.pixel.x, event.pixel.y)
+        // GetFeatureInfoXY(event.pixel.x, event.pixel.y)
+        GetFeatureInfo(event.latLng);
         marker.setPosition(event.latLng);
       });
 
-      setTimeout(function() {
-
-        GetFeatureInfo(map.getCenter());
-
-      }, 1000);
+      // setTimeout(function() {
+      //   GetFeatureInfo(map.getCenter());
+      // }, 1000);
 
       var marker = new google.maps.Marker({
         map: map,
@@ -94,26 +93,27 @@
         GetFeatureInfo(marker.getPosition());
       });
 
-      google.maps.event.addListener(autocomplete, 'place_changed', function() {
-        var place = autocomplete.getPlace();
-
-        if (!place.geometry) {
-          return;
-        }
-
-        marker.setPosition(place.geometry.location);
-
-        GetFeatureInfo(place.geometry.location);
-
-        // If the place has a geometry, then present it on a map.
-        if (place.geometry.viewport) {
-          map.fitBounds(place.geometry.viewport);
-        }
-        else {
-          map.setCenter(place.geometry.location);
-          map.setZoom(15);
-        }
-      });
+      // google.maps.event.addListener(autocomplete, 'place_changed', function() {
+      //   var place = autocomplete.getPlace();
+      //
+      //   if (place == null || !place.geometry) {
+      //     console.log('ignoring place / empty geometry');
+      //     return;
+      //   }
+      //
+      //   marker.setPosition(place.geometry.location);
+      //
+      //   GetFeatureInfo(place.geometry.location);
+      //
+      //   // If the place has a geometry, then present it on a map.
+      //   if (place.geometry.viewport) {
+      //     map.fitBounds(place.geometry.viewport);
+      //   }
+      //   else {
+      //     map.setCenter(place.geometry.location);
+      //     map.setZoom(15);
+      //   }
+      // });
     }
 
     function GetFeatureInfo(latlng) {
@@ -168,70 +168,18 @@
             console.log('status=' + request.status);
             if (request.readyState == 4 && request.status == 200) {
               document.getElementById('preview').innerHTML = request.responseText;
-            }
-          }
-        }
-      }
-    }
-
-
-    function GetFeatureInfoXY(x, y) {
-
-      console.log('map width ' + document.getElementById('map-canvas').offsetWidth);
-
-      var minx = map.getBounds().getSouthWest().lng();
-      var miny = map.getBounds().getSouthWest().lat();
-      var maxx = map.getBounds().getNorthEast().lng();
-      var maxy = map.getBounds().getNorthEast().lat();
-
-      var bbox = minx + ',' + miny + ',' + maxx + ',' + maxy;
-
-      var width = document.getElementById('map-canvas').offsetWidth;
-      var height = document.getElementById('map-canvas').offsetHeight;
-      var results = [];
-
-      for (var i = 0; i < sources.length; i++) {
-        source = sources[i];
-        console.log("source.name=" + source.name);
-
-        var url = source.wms_url + "?" + getFeatureInfoParams.join("&");
-        url += "&layers=" + source.layer_name;
-        url += "&query_layers=" + source.layer_name;
-        url += '&width=' + width;
-        url += '&height=' + height;
-        url += '&bbox=' + bbox;
-        url += '&x=' + Math.floor(x);
-        url += '&y=' + Math.floor(y);
-
-        console.log('url=' + url);
-        if (window.XMLHttpRequest) {
-          var request = new XMLHttpRequest();
-          request.open("GET", url, true);
-          request.send();
-
-          request.onreadystatechange = function() {
-            console.log('status=' + request.status);
-            if (request.readyState == 4 && request.status == 200) {
-              document.getElementById('preview').innerHTML = request.responseText;
-              if (request.responseText.type !== "FeatureCollection") {
+              // $scope.results[0] = {};
+              // $scope.results[0].name = 'foo name';
+              // $scope.results[0].properties = {ESA_NAME: 'foo',ESA_DA: 'bar'};
+              var json = JSON.parse(request.responseText);
+              if (json.type !== "FeatureCollection") {
                 console.log("GFI response did not contain FeatureCollection: " + request.responseText);
                 return;
               }
-              results[results.length] = request.responseText.type === "FeatureCollection";
-              displayGFIProperties(results);
+
+
+
             }
-          }
-        }
-      }
-    }
-
-    function displayGFIProperties(arrProperties) {
-      for (var i = 0; i < arrProperties.length; i++) {
-        var properties = arrProperties[i];
-
-        for (var property in properties) {
-          if (object.hasOwnProperty(property)) {
-            console.log("property " + property + "value=" + properties[property]);
           }
         }
       }
@@ -241,16 +189,7 @@
 </head>
 
 <body onload="initialize()" ng-controller="GFICtrl">
-
   <div class="container">
-
-    <div class="navbar navbar-fixed-top navbar-inverse">
-      <div class="navbar-inner">
-        <div class="pull-right">
-          <a href="https://c9.io" class="brand">Cloud9 IDE</a>
-        </div>
-      </div>
-    </div>
     <div class="page-header">
       <h1>Data Here</h1>
     </div>
@@ -260,8 +199,11 @@
 
     <div class="row">
       <div class="span12">
-        <input id="autocomplete" type="text" ng-model="text" placeholder="Address">
+        <input id="autocomplete" type="text" ng-autocomplete="result" details="place" options="options" placeholder="Address">
+        <!-- <input ng-model="user.place.lat"> -->
+        <!-- <input ng-model="user.place.lng"> -->
       </div>
+      <button ng-click="search();">Search</button>
     </div>
     <div class="row">
       <div class="span12">
@@ -282,11 +224,11 @@
       <tbody>
         <tr>
           <th scope="row" class="dataset-label">ESA_NAME</th>
-          <td class="dataset-details" property="dc:type">{{result.ESA_NAME}}</td>
+          <td class="dataset-details" property="dc:type">{{result.properties.ESA_NAME}}</td>
         </tr>
         <tr>
           <th scope="row" class="dataset-label">ESA_DA</th>
-          <td class="dataset-details" property="dc:type">{{result.ESA_DA}}</td>
+          <td class="dataset-details" property="dc:type">{{result.properties.ESA_DA}}</td>
         </tr>
         <tr>
           <th scope="row" class="dataset-label">ESA_NAME</th>
@@ -308,10 +250,11 @@
     </table>
   </div>
 
-  <script src="/socket.io/socket.io.js"></script>
+  <!-- <script src="/socket.io/socket.io.js"></script> -->
   <script src="/js/jquery.min.js"></script>
   <script src="/js/bootstrap.min.js"></script>
   <script src="/js/angular.min.js"></script>
+  <script src="/js/ngAutocomplete.js"></script>
   <script src="/js/controller.js"></script>
 </body>
 
