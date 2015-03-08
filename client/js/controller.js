@@ -10,20 +10,28 @@ app.controller('GFICtrl', function ($scope, $http) {
   $scope.options = null;
   $scope.place = '';
 
-  $scope.sources = [
-    {
-      name: 'MyBroadband_GetFeatureInfo_38SydneyAv',
-      dataset: '',
-      wms_url: 'test/GetFeatureInfo_38SydneyAv.json',
-      layer_name: '',
-    }
-    // {
-    //   name: "MyBroadband",
-    //   url_name: "mybroadband",
-    //   wms_url: "https://www.mybroadband.communications.gov.au/geoserver/wms",
-    //   layer_name: "DistributionArea"
-    // }
-  ];
+  $scope.sources = [];
+
+  // $scope.sources[$scope.sources.length] = {
+  //     name: 'MyBroadband_GetFeatureInfo_38SydneyAv',
+  //     dataset: '',
+  //     wms_url: 'test/GetFeatureInfo_38SydneyAv.json',
+  //     layer_name: ''
+  //   };
+
+  $scope.sources[$scope.sources.length] = {
+      name: "Commonwealth Electoral Divisions",
+      dataset: "federal-electoral-boundaries",
+      wms_url: "http://nationalmap.nicta.com.au/proxy/http://geoserver-nm.nicta.com.au/admin_bnds_abs/ows",
+      layer_name: "admin_bnds%3ACED_2011_AUST"
+    };
+
+  $scope.sources[$scope.sources.length] = {
+      name: "MyBroadband",
+      dataset: "mybroadband",
+      wms_url: "https://www.mybroadband.communications.gov.au/geoserver/wms",
+      layer_name: "DistributionArea"
+    };
 
   var getFeatureInfoParams = [
     "REQUEST=GetFeatureInfo", "SERVICE=WMS", "VERSION=1.1.1", "FEATURE_COUNT=10", "INFO_FORMAT=application/json", "EXCEPTIONS=application%2Fvnd.ogc.se_xml"
@@ -96,14 +104,14 @@ app.controller('GFICtrl', function ($scope, $http) {
       //   };
       // })(source.name));
       $http.get(url)
-        .success($scope.onSearchSuccess(source.name));
+        .success($scope.onSearchSuccess(source));
     }
   };
 
-  $scope.onSearchSuccess = function (name) {
+  $scope.onSearchSuccess = function (source) {
     return function(data) {
       // $scope.onSearchSuccess(name, data);
-      console.log('onSearchSuccess');
+      console.log('onSearchSuccess ' + source.name);
       if (data.type !== "FeatureCollection") {
         console.log('Ignoring non-GetFeatureInfo response');
         return;
@@ -115,15 +123,10 @@ app.controller('GFICtrl', function ($scope, $http) {
         return;
       }
 
-      if (data.features.length > 1)
-      {
-        console.log('Response contained multiple features, using first.');
-      }
-
-      console.log('GetFeatureInfo OK');
+      console.log('GetFeatureInfo OK ' + source.name);
 
       $scope.results[$scope.results.length] = {
-        name: name,
+        source: source,
         features: data.features
       };
     };
