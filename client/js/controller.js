@@ -11,18 +11,18 @@ app.controller('GFICtrl', function ($scope, $http) {
   $scope.place = '';
 
   $scope.sources = [
-    // {
-    //   'name': "MyBroadband_GetFeatureInfo_38SydneyAv",
-    //   'url_name': "notused",
-    //   'wms_url': "test/GetFeatureInfo_38SydneyAv.json",
-    //   'layer_name': "notused"
-    // }
     {
-      name: "MyBroadband",
-      url_name: "mybroadband",
-      wms_url: "https://programs.communications.gov.au/geoserver/wms",
-      layer_name: "MyBroadband_Map"
+      name: 'MyBroadband_GetFeatureInfo_38SydneyAv',
+      dataset: '',
+      wms_url: 'test/GetFeatureInfo_38SydneyAv.json',
+      layer_name: '',
     }
+    // {
+    //   name: "MyBroadband",
+    //   url_name: "mybroadband",
+    //   wms_url: "https://www.mybroadband.communications.gov.au/geoserver/wms",
+    //   layer_name: "DistributionArea"
+    // }
   ];
 
   var getFeatureInfoParams = [
@@ -88,33 +88,44 @@ app.controller('GFICtrl', function ($scope, $http) {
 
       console.log('url=' + url);
 
-      $http.get(url).success($scope.onSearchSuccess);
+      // $http.get(url).success($scope.onSearchSuccess);
+      // $http.get(url)
+      //   .success((function(name) {
+      //     return function(data) {
+      //       $scope.onSearchSuccess(name, data);
+      //   };
+      // })(source.name));
+      $http.get(url)
+        .success($scope.onSearchSuccess(source.name));
     }
   };
 
-  $scope.onSearchSuccess = function(data){
-    console.log('onSearchSuccess');
-    if (data.type !== "FeatureCollection") {
-      console.log('Ignoring non-GetFeatureInfo response');
-      return;
-    }
+  $scope.onSearchSuccess = function (name) {
+    return function(data) {
+      // $scope.onSearchSuccess(name, data);
+      console.log('onSearchSuccess');
+      if (data.type !== "FeatureCollection") {
+        console.log('Ignoring non-GetFeatureInfo response');
+        return;
+      }
 
-    if (data.features.length === 0)
-    {
-      console.log('Response contained no features');
-      return;
-    }
+      if (data.features.length === 0)
+      {
+        console.log('Response contained no features');
+        return;
+      }
 
-    if (data.features.length > 1)
-    {
-      console.log('Response contained multiple features, using first.');
-    }
+      if (data.features.length > 1)
+      {
+        console.log('Response contained multiple features, using first.');
+      }
 
-    console.log('GetFeatureInfo OK');
+      console.log('GetFeatureInfo OK');
 
-    $scope.results[$scope.results.length] = {
-      'properties': data.features[0].properties
+      $scope.results[$scope.results.length] = {
+        name: name,
+        features: data.features
+      };
     };
   };
-
 });

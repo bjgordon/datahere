@@ -72,12 +72,12 @@
       //     // 'country': 'au'
       //     // }
       //   });
-
-      google.maps.event.addListener(map, 'click', function(event) {
-        // GetFeatureInfoXY(event.pixel.x, event.pixel.y)
-        GetFeatureInfo(event.latLng);
-        marker.setPosition(event.latLng);
-      });
+      //
+      // google.maps.event.addListener(map, 'click', function(event) {
+      //   // GetFeatureInfoXY(event.pixel.x, event.pixel.y)
+      //   GetFeatureInfo(event.latLng);
+      //   marker.setPosition(event.latLng);
+      // });
 
       // setTimeout(function() {
       //   GetFeatureInfo(map.getCenter());
@@ -88,10 +88,10 @@
         position: map.getCenter()
       });
 
-      google.maps.event.addListener(marker, 'dragend', function() {
-        console.log('marker dragged to ' + marker.getPosition());
-        GetFeatureInfo(marker.getPosition());
-      });
+      // google.maps.event.addListener(marker, 'dragend', function() {
+      //   console.log('marker dragged to ' + marker.getPosition());
+      //   GetFeatureInfo(marker.getPosition());
+      // });
 
       // google.maps.event.addListener(autocomplete, 'place_changed', function() {
       //   var place = autocomplete.getPlace();
@@ -116,74 +116,74 @@
       // });
     }
 
-    function GetFeatureInfo(latlng) {
-      if (latlng == undefined) {
-        console.log('latlng not defined');
-        return;
-      }
-      var lat = latlng.lat();
-      var lng = latlng.lng();
-      console.log('GetFeatureInfoFromMapBounds lat=' + lat + ' lng=' + lng);
-
-      var bounds = new google.maps.Circle({
-        center: latlng,
-        radius: 50.0
-      }).getBounds();
-      var minx = bounds.getSouthWest().lng();
-      var miny = bounds.getSouthWest().lat();
-      var maxx = bounds.getNorthEast().lng();
-      var maxy = bounds.getNorthEast().lat();
-
-      var bbox = minx + "," + miny + "," + maxx + "," + maxy;
-      var width = document.getElementById('map-canvas').offsetWidth;
-      var height = document.getElementById('map-canvas').offsetHeight;
-
-      var x = Math.floor((lng - bounds.getSouthWest().lng()) * width);
-      var y = Math.floor((bounds.getNorthEast().lat() - lat) * height);
-
-      console.log('bbox=' + bbox);
-      console.log('width=' + width + ' height=' + height);
-      console.log('x=' + x + ' y=' + y);
-
-      for (var i = 0; i < sources.length; i++) {
-        source = sources[i];
-        console.log("source.name=" + source.name);
-        var url = source.wms_url + "?" + getFeatureInfoParams.join("&");
-        url += "&layers=" + source.layer_name;
-        url += "&query_layers=" + source.layer_name;
-
-        url += '&width=' + width;
-        url += '&height=' + height;
-        url += '&bbox=' + bbox;
-        url += '&x=' + Math.floor(x);
-        url += '&y=' + Math.floor(y);
-
-        console.log('url=' + url);
-        if (window.XMLHttpRequest) {
-          var request = new XMLHttpRequest();
-          request.open("GET", url, true);
-          request.send();
-
-          request.onreadystatechange = function() {
-            console.log('status=' + request.status);
-            if (request.readyState == 4 && request.status == 200) {
-              document.getElementById('preview').innerHTML = request.responseText;
-              // $scope.results[0] = {};
-              // $scope.results[0].name = 'foo name';
-              // $scope.results[0].properties = {ESA_NAME: 'foo',ESA_DA: 'bar'};
-              var json = JSON.parse(request.responseText);
-              if (json.type !== "FeatureCollection") {
-                console.log("GFI response did not contain FeatureCollection: " + request.responseText);
-                return;
-              }
-
-
-
-            }
-          }
-        }
-      }
-    }
+    // function GetFeatureInfo(latlng) {
+    //   if (latlng == undefined) {
+    //     console.log('latlng not defined');
+    //     return;
+    //   }
+    //   var lat = latlng.lat();
+    //   var lng = latlng.lng();
+    //   console.log('GetFeatureInfoFromMapBounds lat=' + lat + ' lng=' + lng);
+    //
+    //   var bounds = new google.maps.Circle({
+    //     center: latlng,
+    //     radius: 50.0
+    //   }).getBounds();
+    //   var minx = bounds.getSouthWest().lng();
+    //   var miny = bounds.getSouthWest().lat();
+    //   var maxx = bounds.getNorthEast().lng();
+    //   var maxy = bounds.getNorthEast().lat();
+    //
+    //   var bbox = minx + "," + miny + "," + maxx + "," + maxy;
+    //   var width = document.getElementById('map-canvas').offsetWidth;
+    //   var height = document.getElementById('map-canvas').offsetHeight;
+    //
+    //   var x = Math.floor((lng - bounds.getSouthWest().lng()) * width);
+    //   var y = Math.floor((bounds.getNorthEast().lat() - lat) * height);
+    //
+    //   console.log('bbox=' + bbox);
+    //   console.log('width=' + width + ' height=' + height);
+    //   console.log('x=' + x + ' y=' + y);
+    //
+    //   for (var i = 0; i < sources.length; i++) {
+    //     source = sources[i];
+    //     console.log("source.name=" + source.name);
+    //     var url = source.wms_url + "?" + getFeatureInfoParams.join("&");
+    //     url += "&layers=" + source.layer_name;
+    //     url += "&query_layers=" + source.layer_name;
+    //
+    //     url += '&width=' + width;
+    //     url += '&height=' + height;
+    //     url += '&bbox=' + bbox;
+    //     url += '&x=' + Math.floor(x);
+    //     url += '&y=' + Math.floor(y);
+    //
+    //     console.log('url=' + url);
+    //     if (window.XMLHttpRequest) {
+    //       var request = new XMLHttpRequest();
+    //       request.open("GET", url, true);
+    //       request.send();
+    //
+    //       request.onreadystatechange = function() {
+    //         console.log('status=' + request.status);
+    //         if (request.readyState == 4 && request.status == 200) {
+    //           document.getElementById('preview').innerHTML = request.responseText;
+    //           // $scope.results[0] = {};
+    //           // $scope.results[0].name = 'foo name';
+    //           // $scope.results[0].properties = {ESA_NAME: 'foo',ESA_DA: 'bar'};
+    //           var json = JSON.parse(request.responseText);
+    //           if (json.type !== "FeatureCollection") {
+    //             console.log("GFI response did not contain FeatureCollection: " + request.responseText);
+    //             return;
+    //           }
+    //
+    //
+    //
+    //         }
+    //       };
+    //     }
+    //   }
+    // }
   </script>
 
 </head>
@@ -211,10 +211,11 @@
       </div>
     </div>
     <pre id='preview' style='display:none'></pre>
+    <div ng-repeat="result in results">
     <div class="row span12">
-      <strong>MyBroadband</strong>
+      <strong>{{result.name}}</strong>
     </div>
-    <table ng-repeat="result in results" class="table table-striped table-bordered table-condensed table-responsive">
+    <table ng-repeat="feature in result.features" class="table table-striped table-bordered table-condensed table-responsive">
       <thead>
         <tr>
           <th scope="col">Field</th>
@@ -222,45 +223,21 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <th scope="row" class="dataset-label">ESA_NAME</th>
-          <td class="dataset-details" property="dc:type">{{result.properties.ESA_NAME}}</td>
-        </tr>
-        <tr>
-          <th scope="row" class="dataset-label">ESA_DA</th>
-          <td class="dataset-details" property="dc:type">{{result.properties.ESA_DA}}</td>
-        </tr>
-        <tr>
-          <th scope="row" class="dataset-label">ESA_NAME</th>
-          <td class="dataset-details" property="dc:type">UNANDERRA</td>
-        </tr>
-        <tr>
-          <th scope="row" class="dataset-label">ESA_CODE</th>
-          <td class="dataset-details" property="dc:language">UNAN</td>
-        </tr>
-        <tr>
-          <th scope="row" class="dataset-label">AVAILABILITY</th>
-          <td class="dataset-details" property="dc:language">E</td>
-        </tr>
-        <tr>
-          <th scope="row" class="dataset-label">QUALITY</th>
-          <td class="dataset-details" property="dc:language">E</td>
+        <tr ng-repeat="(key, value) in feature.properties">
+          <th scope="row" class="dataset-label">{{key}}</th>
+          <td class="dataset-details" property="dc:type">{{value}}</td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <!-- <script src="/socket.io/socket.io.js"></script> -->
-  <!-- <script src="/js/jquery.min.js"></script>
-  <script src="/js/bootstrap.min.js"></script>
-  <script src="/js/angular.min.js"></script>
-  <script src="/js/ngAutocomplete.js"></script>
-  <script src="/js/controller.js"></script> -->
-  <script src="/bower_components/jquery/dist/jquery.min.js"></script>
-  <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-  <script src="/bower_components/angular/angular.min.js"></script>
-  <script src="/js/ngAutocomplete.js"></script>
-  <script src="/js/controller.js"></script>
+  <script src="bower_components/jquery/dist/jquery.min.js"></script>
+  <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script src="bower_components/angular/angular.min.js"></script>
+  <script src="bower_components/angular-resource/angular-resource.min.js"></script>
+  <!-- <script src="js/services.js"></script> -->
+  <script src="js/ngAutocomplete.js"></script>
+  <script src="js/controller.js"></script>
 </body>
 
 </html>
