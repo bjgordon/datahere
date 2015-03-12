@@ -25,9 +25,54 @@ app.controller('GFICtrl', function ($scope, $http, uiGmapGoogleMapApi) {
     zoom: 8
   };
 
+  $scope.marker = {
+      id: 0,
+      coords: {
+          latitude: 52.47491894326404,
+          longitude: -1.8684210293371217
+      },
+      options: { draggable: true },
+      events: {
+          dragend: function (marker, eventName, args) {
+
+              $scope.marker.options = {
+                  draggable: true,
+                  labelContent: "lat: " + $scope.marker.coords.latitude + ' ' + 'lon: ' + $scope.marker.coords.longitude,
+                  labelAnchor: "100 0",
+                  labelClass: "marker-labels"
+              };
+          }
+      }
+  };
+
   $scope.options = {scrollwheel: false};
   var events = {
-    places_changed: function (searchBox) {}
+    places_changed: function (searchBox) {
+        var place = searchBox.getPlaces();
+        if (!place || place == 'undefined' || place.length === 0) {
+            console.log('no place data :(');
+            $scope.place = undefined;
+            return;
+        }
+
+        $scope.place = place[0];
+
+        $scope.map = {
+            "center": {
+                "latitude": place[0].geometry.location.lat(),
+                "longitude": place[0].geometry.location.lng()
+            },
+            "zoom": 18
+        };
+        $scope.marker = {
+            id: 0,
+            coords: {
+                latitude: place[0].geometry.location.lat(),
+                longitude: place[0].geometry.location.lng()
+            }
+        };
+        $scope.search();
+    }
   };
   $scope.searchbox = {
     template:'searchbox.tpl.html',
@@ -95,8 +140,10 @@ app.controller('GFICtrl', function ($scope, $http, uiGmapGoogleMapApi) {
     var maxy = bounds.getNorthEast().lat();
 
     var bbox = minx + "," + miny + "," + maxx + "," + maxy;
-    var width = document.getElementById('map-canvas').offsetWidth;
-    var height = document.getElementById('map-canvas').offsetHeight;
+    var map = document.getElementsByClassName("angular-google-map-container")[0];
+    var width = map.offsetWidth;
+    var height = map.offsetHeight;
+
 
     var x = Math.floor((lng - bounds.getSouthWest().lng()) * width);
     var y = Math.floor((bounds.getNorthEast().lat() - lat) * height);
