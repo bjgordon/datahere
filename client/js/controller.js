@@ -1,14 +1,43 @@
-var app = angular.module('datahereApp', ['ngAutocomplete']);
+var app = angular.module('datahereApp', ['uiGmapgoogle-maps']);
 
 app.config(function($httpProvider) {
     //Enable cross domain calls
     $httpProvider.defaults.useXDomain = true;
 });
 
-app.controller('GFICtrl', function ($scope, $http) {
+app.config(function(uiGmapGoogleMapApiProvider) {
+    uiGmapGoogleMapApiProvider.configure({
+        //    key: 'your api key',
+        v: '3.17',
+        libraries: 'places'
+    });
+});
+
+app.controller('GFICtrl', function ($scope, $http, uiGmapGoogleMapApi) {
   $scope.result = '';
   $scope.options = null;
   $scope.place = '';
+
+  $scope.map = {
+    center: {
+      latitude: -31.15535,
+      longitude: 142.59933 },
+    zoom: 8
+  };
+
+  $scope.options = {scrollwheel: false};
+  var events = {
+    places_changed: function (searchBox) {}
+  };
+  $scope.searchbox = {
+    template:'searchbox.tpl.html',
+    events:events,
+    parentdiv:"searchboxParent"
+    };
+
+  uiGmapGoogleMapApi.then(function(maps) {
+    //google maps api loaded
+    });
 
   $scope.sources = [];
 
@@ -55,7 +84,6 @@ app.controller('GFICtrl', function ($scope, $http) {
     var latLng = $scope.place.geometry.location;
     var lat = latLng.lat();
     var lng = latLng.lng();
-    // console.log('searching lat=' + lat + ' lng=' + lng);
 
     var bounds = new google.maps.Circle({
       center: $scope.place.geometry.location,
@@ -96,13 +124,6 @@ app.controller('GFICtrl', function ($scope, $http) {
 
       console.log('url=' + url);
 
-      // $http.get(url).success($scope.onSearchSuccess);
-      // $http.get(url)
-      //   .success((function(name) {
-      //     return function(data) {
-      //       $scope.onSearchSuccess(name, data);
-      //   };
-      // })(source.name));
       $http.get(url)
         .success($scope.onSearchSuccess(source));
     }
@@ -110,7 +131,6 @@ app.controller('GFICtrl', function ($scope, $http) {
 
   $scope.onSearchSuccess = function (source) {
     return function(data) {
-      // $scope.onSearchSuccess(name, data);
       console.log('onSearchSuccess ' + source.name);
       if (data.type !== "FeatureCollection") {
         console.log('Ignoring non-GetFeatureInfo response');

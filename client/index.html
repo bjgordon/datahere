@@ -12,17 +12,13 @@
     }
     /*html, body, #map-canvas { height: 100%; margin: 0; padding: 0;}*/
 
-    #map-canvas {
-      width: 100%;
-      /*width:600px;*/
+    .angular-google-map-container { height: 200px}
 
-      height: 200px;
-    }
     #autocomplete {
       width: 100%;
     }
   </style>
-  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=places"></script>
+
   <script type="text/javascript">
 
     var getFeatureInfoParams = [
@@ -32,23 +28,23 @@
     var map;
 
     function initialize() {
-      var start = new google.maps.LatLng(-31.15535, 142.59933);
-
-      var mapOptions = {
-        center: {
-          lat: -34.397,
-          lng: 150.644
-        },
-        // center: start,
-        zoom: 10,
-        mapTypeControl: true,
-        panControl: false,
-        zoomControl: false,
-        streetViewControl: false
-      };
-
-      map = new google.maps.Map(document.getElementById('map-canvas'),
-        mapOptions);
+      // var start = new google.maps.LatLng(-31.15535, 142.59933);
+      //
+      // var mapOptions = {
+      //   center: {
+      //     lat: -34.397,
+      //     lng: 150.644
+      //   },
+      //   // center: start,
+      //   zoom: 10,
+      //   mapTypeControl: true,
+      //   panControl: false,
+      //   zoomControl: false,
+      //   streetViewControl: false
+      // };
+      //
+      // map = new google.maps.Map(document.getElementById('map-canvas'),
+      //   mapOptions);
 
       // autocomplete = new google.maps.places.Autocomplete(
       //   /** @type {HTMLInputElement} */
@@ -69,10 +65,10 @@
       //   GetFeatureInfo(map.getCenter());
       // }, 1000);
 
-      var marker = new google.maps.Marker({
-        map: map,
-        position: map.getCenter()
-      });
+      // var marker = new google.maps.Marker({
+      //   map: map,
+      //   position: map.getCenter()
+      // });
 
       // google.maps.event.addListener(marker, 'dragend', function() {
       //   console.log('marker dragged to ' + marker.getPosition());
@@ -82,14 +78,15 @@
       // google.maps.event.addListener(autocomplete, 'place_changed', function() {
       //   var place = autocomplete.getPlace();
       //
-      //   if (place == null || !place.geometry) {
+      //   if (place === null || !place.geometry) {
       //     console.log('ignoring place / empty geometry');
       //     return;
       //   }
       //
       //   marker.setPosition(place.geometry.location);
       //
-      //   GetFeatureInfo(place.geometry.location);
+      //   //Data is now fetched in angular
+      //   // GetFeatureInfo(place.geometry.location);
       //
       //   // If the place has a geometry, then present it on a map.
       //   if (place.geometry.viewport) {
@@ -116,13 +113,28 @@
 
     <div class="row">
       <div class="span12">
-        <input id="autocomplete" type="text" ng-autocomplete="result" details="place" options="options" placeholder="Address">
+        <!-- <input id="autocomplete" type="text" ng-autocomplete="result" details="place" options="options" placeholder="Address"> -->
+        <!-- <div id="autocomplete"> -->
+          <!-- <input type="text" placeholder="Search Box"> -->
+        <!-- </div> -->
+        <div class="col-xs-12 col-md-12" id="searchboxParent">
+          <script type="text/ng-template" id="searchbox.tpl.html">
+            <input type="text" ng-model="address" placeholder="Search Address" required />
+          </script>
+        </div>
+
       </div>
       <button ng-click="search();">Search</button>
     </div>
     <div class="row">
       <div class="span12">
-        <div id="map-canvas"></div>
+        <!-- <div id="map-canvas"></div> -->
+        <ui-gmap-google-map center='map.center' zoom='map.zoom' options="options" draggable="true">
+          <ui-gmap-search-box
+            template="searchbox.template"
+            events="searchbox.events"
+            parentdiv="searchbox.parentdiv"></ui-gmap-search-box>
+        </ui-gmap-google-map>
       </div>
     </div>
     <pre id='preview' style='display:none'></pre>
@@ -150,6 +162,8 @@
   <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
   <script src="bower_components/angular/angular.min.js"></script>
   <script src="bower_components/angular-resource/angular-resource.min.js"></script>
+  <script src="bower_components/lodash/dist/lodash.min.js"></script>
+  <script src="bower_components/angular-google-maps/dist/angular-google-maps.min.js"></script>
   <script src="js/ngAutocomplete.js"></script>
   <script src="js/controller.js"></script>
 </body>
