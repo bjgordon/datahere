@@ -33,16 +33,16 @@ app.controller('GFICtrl', function ($scope, $http, uiGmapGoogleMapApi) {
           latitude: 52.47491894326404,
           longitude: -1.8684210293371217
       },
-      options: { draggable: true },
+      options: { draggable: false },
       events: {
           dragend: function (marker, eventName, args) {
 
-              $scope.marker.options = {
-                  draggable: true,
-                  labelContent: "lat: " + $scope.marker.coords.latitude + ' ' + 'lon: ' + $scope.marker.coords.longitude,
-                  labelAnchor: "100 0",
-                  labelClass: "marker-labels"
-              };
+              // $scope.marker.options = {
+              //     draggable: true,
+              //     labelContent: "lat: " + $scope.marker.coords.latitude + ' ' + 'lon: ' + $scope.marker.coords.longitude,
+              //     labelAnchor: "100 0",
+              //     labelClass: "marker-labels"
+              // };
           }
       }
   };
