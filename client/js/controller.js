@@ -14,15 +14,17 @@ app.config(function(uiGmapGoogleMapApiProvider) {
 });
 
 app.controller('GFICtrl', function ($scope, $http, uiGmapGoogleMapApi) {
-  $scope.result = '';
-  $scope.options = null;
-  $scope.place = '';
 
   $scope.map = {
     center: {
       latitude: -31.15535,
       longitude: 142.59933 },
-    zoom: 8
+    zoom: 8,
+    options: {
+      panControl: false,
+      zoomControl: true,
+      streetViewControl: false
+    }
   };
 
   $scope.marker = {
