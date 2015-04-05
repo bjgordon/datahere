@@ -1,4 +1,4 @@
-var app = angular.module('datahereApp', ['uiGmapgoogle-maps']);
+var app = angular.module('datahereApp', ['uiGmapgoogle-maps', 'ngProgress']);
 
 app.config(function($httpProvider) {
     //Enable cross domain calls
@@ -13,7 +13,7 @@ app.config(function(uiGmapGoogleMapApiProvider) {
     });
 });
 
-app.controller('GFICtrl', function ($scope, $http, uiGmapGoogleMapApi) {
+app.controller('GFICtrl', function ($scope, $http, uiGmapGoogleMapApi,ngProgress) {
 
   $scope.map = {
     center: {
@@ -33,7 +33,7 @@ app.controller('GFICtrl', function ($scope, $http, uiGmapGoogleMapApi) {
           latitude: 52.47491894326404,
           longitude: -1.8684210293371217
       },
-      options: { draggable: false },
+      options: { draggable: true },
       events: {
           dragend: function (marker, eventName, args) {
 
@@ -73,7 +73,7 @@ app.controller('GFICtrl', function ($scope, $http, uiGmapGoogleMapApi) {
                 longitude: place[0].geometry.location.lng()
             }
         };
-        $scope.search();
+        $scope.search(ngProgress);
     }
   };
   $scope.searchbox = {
@@ -113,6 +113,7 @@ app.controller('GFICtrl', function ($scope, $http, uiGmapGoogleMapApi) {
     "REQUEST=GetFeatureInfo", "SERVICE=WMS", "VERSION=1.1.1", "FEATURE_COUNT=10", "INFO_FORMAT=application/json", "EXCEPTIONS=application%2Fvnd.ogc.se_xml"
   ];
 
+
   $scope.search = function() {
     $scope.results = [];
     if (!$scope.place)
@@ -128,6 +129,12 @@ app.controller('GFICtrl', function ($scope, $http, uiGmapGoogleMapApi) {
     }
 
     console.log('Searching ' + $scope.place.formatted_address);
+
+    $scope.currentSearchNumberComplete = 0;
+    ngProgress.start();
+    var progress = $scope.currentSearchNumberComplete / $scope.sources.length;
+    console.log('Progress=' + progress);
+    ngProgress.set(progress);
     var latLng = $scope.place.geometry.location;
     var lat = latLng.lat();
     var lng = latLng.lng();
@@ -149,6 +156,7 @@ app.controller('GFICtrl', function ($scope, $http, uiGmapGoogleMapApi) {
 
     var x = Math.floor((lng - bounds.getSouthWest().lng()) * width);
     var y = Math.floor((bounds.getNorthEast().lat() - lat) * height);
+
 
     for (var i = 0; i < $scope.sources.length; i++) {
       var source = $scope.sources[i];
@@ -181,6 +189,11 @@ app.controller('GFICtrl', function ($scope, $http, uiGmapGoogleMapApi) {
   $scope.onSearchSuccess = function (source) {
     return function(data) {
       console.log('onSearchSuccess ' + source.name);
+      $scope.currentSearchNumberComplete++;
+      var progress = $scope.currentSearchNumberComplete / $scope.sources.length * 100;
+      console.log('Progress=' + progress);
+      ngProgress.set(progress);
+
       if (data.type !== "FeatureCollection") {
         console.log('Ignoring non-GetFeatureInfo response');
         return;
