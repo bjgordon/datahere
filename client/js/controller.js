@@ -1,5 +1,10 @@
 var app = angular.module('datahereApp', ['uiGmapgoogle-maps', 'ngProgress']);
 
+var STATE_FOUND = 1;
+var STATE_WAITING = 2;
+var STATE_NOT_FOUND = 3;
+var STATE_FAILED = 4;
+
 app.config(function($httpProvider) {
     //Enable cross domain calls
     $httpProvider.defaults.useXDomain = true;
@@ -13,7 +18,14 @@ app.config(function(uiGmapGoogleMapApiProvider) {
     });
 });
 
-app.controller('GFICtrl', function ($scope, $http, uiGmapGoogleMapApi,ngProgress) {
+app.controller('DataHereCtrl', function ($scope, $http, uiGmapGoogleMapApi,ngProgress) {
+
+  $scope.onSelectedSourcesChange = function(value) {
+    if ($scope.place !== undefined)
+    {
+      $scope.onSearch();
+    }
+  };
 
   $scope.map = {
     center: {
@@ -73,7 +85,9 @@ app.controller('GFICtrl', function ($scope, $http, uiGmapGoogleMapApi,ngProgress
                 longitude: place[0].geometry.location.lng()
             }
         };
-        $scope.search(ngProgress);
+
+        //Start the search at this place.
+        $scope.onSearch();
     }
   };
   $scope.searchbox = {
@@ -84,38 +98,38 @@ app.controller('GFICtrl', function ($scope, $http, uiGmapGoogleMapApi,ngProgress
 
   uiGmapGoogleMapApi.then(function(maps) {
     //google maps api loaded
-    });
 
-  $scope.sources = [];
-
-  // $scope.sources[$scope.sources.length] = {
-  //     name: 'MyBroadband_GetFeatureInfo_38SydneyAv',
-  //     dataset: '',
-  //     wms_url: 'test/GetFeatureInfo_38SydneyAv.json',
-  //     layer_name: ''
-  //   };
-
-  $scope.sources[$scope.sources.length] = {
-      name: "Commonwealth Electoral Divisions",
-      dataset: "federal-electoral-boundaries",
-      wms_url: "http://nationalmap.nicta.com.au/proxy/http://geoserver-nm.nicta.com.au/admin_bnds_abs/ows",
-      layer_name: "admin_bnds%3ACED_2011_AUST"
+    //initialise dom
+    $scope.selectedSources = "all";
+    $scope.place = {
+      formatted_address : "foo",
+      geometry: {
+        location: new google.maps.LatLng(-35.2819998, 149.1286843)
+      }
     };
 
-  $scope.sources[$scope.sources.length] = {
-      name: "MyBroadband",
-      dataset: "mybroadband",
-      wms_url: "https://www.mybroadband.communications.gov.au/geoserver/wms",
-      layer_name: "DistributionArea"
+    $scope.marker = {
+        id: 0,
+        coords: {
+            latitude: $scope.place.geometry.location.lat(),
+            longitude: $scope.place.geometry.location.lng()
+        }
     };
+
+    // $scope.onSearch();
+
+  });
+
+
 
   var getFeatureInfoParams = [
     "REQUEST=GetFeatureInfo", "SERVICE=WMS", "VERSION=1.1.1", "FEATURE_COUNT=10", "INFO_FORMAT=application/json", "EXCEPTIONS=application%2Fvnd.ogc.se_xml"
   ];
 
 
-  $scope.search = function() {
-    $scope.results = [];
+
+  //onSearch. Setup the sources list, then start the search.
+  $scope.onSearch = function() {
     if (!$scope.place)
     {
       console.log('No place object to search');
@@ -128,10 +142,81 @@ app.controller('GFICtrl', function ($scope, $http, uiGmapGoogleMapApi,ngProgress
       return;
     }
 
+    ngProgress.start();
+
     console.log('Searching ' + $scope.place.formatted_address);
 
+    if ($scope.selectedSources === "recommended")
+    {
+      $scope.sources = [];
+
+      $scope.sources[$scope.sources.length] = {
+          name: "Commonwealth Electoral Divisions",
+          dataset: "federal-electoral-boundaries",
+          wms_url: "http://nationalmap.nicta.com.au/proxy/http://geoserver-nm.nicta.com.au/admin_bnds_abs/ows",
+          layer_name: "admin_bnds%3ACED_2011_AUST"
+        };
+
+      $scope.sources[$scope.sources.length] = {
+          name: "MyBroadband",
+          dataset: "mybroadband",
+          wms_url: "https://www.mybroadband.communications.gov.au/geoserver/wms",
+          layer_name: "DistributionArea"
+        };
+
+        $scope.searchSources();
+    }
+    else {
+      //get all wms sources via ckan api
+      $scope.sources =[];
+      // url = 'http://www.data.gov.au//api/3/action/package_search?rows=100000&fq=res_format%3awms';
+      url = 'test/package_search.json';
+      $http.get(url).
+        success(function(data, status, headers, config) {
+          console.log('Result count=' + data.result.count + ' from url=' + url);
+          for (var i = 0; i < data.result.count; i++)
+          {
+            var pkg = data.result.results[i];
+            console.log('title=' + pkg.title);
+            wms = [];
+            count = 0;
+            for (var j = 0; j < pkg.num_resources; j++) {
+              var r = pkg.resources[j];
+              if (r.format === 'wms') {
+                count++;
+                wms[wms.length] = {name: r.name, url: r.url, wms_layer: r.wms_layer};
+              }
+            }
+            for (j = 0; j < wms.length; j++) {
+              var name = pkg.title;
+              if (wms.length > 1)
+              {
+                name += " - " + wms[j].name;
+              }
+              $scope.sources[$scope.sources.length] = {
+                  name: name,
+                  dataset: pkg.name,
+                  wms_url: wms[j].url,
+                  layer_name: wms[j].wms_layer
+              };
+            }
+          }
+
+          $scope.searchSources();
+
+        }).
+        error(function(data, status, headers, config) {
+
+        });
+
+    }
+  };
+
+  //Search each of the sources
+  $scope.searchSources = function()
+  {
     $scope.currentSearchNumberComplete = 0;
-    ngProgress.start();
+
     var progress = $scope.currentSearchNumberComplete / $scope.sources.length;
     console.log('Progress=' + progress);
     ngProgress.set(progress);
@@ -157,9 +242,11 @@ app.controller('GFICtrl', function ($scope, $http, uiGmapGoogleMapApi,ngProgress
     var x = Math.floor((lng - bounds.getSouthWest().lng()) * width);
     var y = Math.floor((bounds.getNorthEast().lat() - lat) * height);
 
-
     for (var i = 0; i < $scope.sources.length; i++) {
+    // for (var i = 0; i < 2; i++) {
       var source = $scope.sources[i];
+      $scope.sources[i].state = STATE_WAITING;
+      source.results = null;
       console.log("source.name=" + source.name);
       console.log('wms url=' +source.wms_url);
 
@@ -169,7 +256,17 @@ app.controller('GFICtrl', function ($scope, $http, uiGmapGoogleMapApi,ngProgress
         break;
       }
 
-      var url = source.wms_url + "?" + getFeatureInfoParams.join("&");
+      var url = source.wms_url;
+console.log("original url=" + url);
+      //remove anything query parameters so we just have the base url
+      var urlparts= url.split('?');
+      if (urlparts.length >= 2)
+      {
+        url = urlparts[0];
+      }
+      console.log("fixed url=" + url);
+
+      url += "?" + getFeatureInfoParams.join("&");
       url += "&layers=" + source.layer_name;
       url += "&query_layers=" + source.layer_name;
 
@@ -196,21 +293,21 @@ app.controller('GFICtrl', function ($scope, $http, uiGmapGoogleMapApi,ngProgress
 
       if (data.type !== "FeatureCollection") {
         console.log('Ignoring non-GetFeatureInfo response');
+        source.state = STATE_FAILED;
         return;
       }
 
       if (data.features.length === 0)
       {
         console.log('Response contained no features');
+        source.state = STATE_NOT_FOUND;
         return;
       }
 
       console.log('GetFeatureInfo OK ' + source.name);
+      source.state = STATE_FOUND;
+      source.results = data.features;
 
-      $scope.results[$scope.results.length] = {
-        source: source,
-        features: data.features
-      };
     };
   };
 });

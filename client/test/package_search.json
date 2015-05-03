@@ -1,0 +1,157 @@
+{
+  "help": "removed",
+  "success": true,
+  "result": {
+    "count": 1,
+    "sort": "score desc, metadata_modified desc",
+    "facets": {},
+    "results": [
+      {
+        "license_title": "Other (Open)",
+        "maintainer": "my_broadband",
+        "relationships_as_object": [],
+        "jurisdiction": "Commonwealth of Australia",
+        "temporal_coverage_to": "",
+        "private": false,
+        "maintainer_email": null,
+        "revision_timestamp": "2015-01-14T02:35:41.605310",
+        "geospatial_topic": [],
+        "id": "e9f887d7-f437-43ca-8e00-c1a288d225b3",
+        "metadata_created": "2014-03-11T22:27:32.758797",
+        "spatial_coverage": "Australia",
+        "metadata_modified": "2015-04-22T05:44:23.352067",
+        "author": "Department of Communications",
+        "author_email": null,
+        "state": "active",
+        "version": "",
+        "license_id": "other-open",
+        "contact_point": "Department of Communications ",
+        "type": "dataset",
+        "resources": [
+          {
+            "resource_group_id": "8bcc0b13-50a6-4959-bfdc-5f21e969cd11",
+            "cache_last_updated": null,
+            "revision_timestamp": "2015-01-14T05:13:06.252978",
+            "webstore_last_updated": null,
+            "autoupdate": "active",
+            "id": "537a05ab-9439-4540-95ee-5cdf21504920",
+            "size": null,
+            "state": "active",
+            "hash": "",
+            "description": "Visit this site for the MyBroadband Results detailed maps and reports.",
+            "format": "HTML",
+            "tracking_summary": {
+              "total": 4,
+              "recent": 2
+            },
+            "last_modified": null,
+            "url_type": null,
+            "mimetype": null,
+            "cache_url": null,
+            "name": "MyBroadband Results Detailed Maps and Reports",
+            "created": "2014-07-13T23:55:51.702331",
+            "url": "http://www.mybroadband.communications.gov.au/reports.aspx",
+            "webstore_url": null,
+            "mimetype_inner": null,
+            "position": 0,
+            "revision_id": "68f7d559-ec00-435b-b826-c59e11f709fa",
+            "resource_type": null
+          },
+          {
+            "resource_group_id": "8bcc0b13-50a6-4959-bfdc-5f21e969cd11",
+            "cache_last_updated": null,
+            "revision_timestamp": "2015-04-22T05:44:23.347846",
+            "webstore_last_updated": null,
+            "autoupdate": "active",
+            "id": "b6256bfd-6614-4dd2-a12d-b52e285ee64a",
+            "size": null,
+            "wms_layer": "public:MyBroadband_Map",
+            "state": "active",
+            "hash": "",
+            "description": "View the data in this dataset online via an online map. The following layers are available:\r\n- MyBroadband_ADSL_Quality\r\n- MyBroadband_ADSL_Quality_no_outline\r\n- MyBroadband_Availability\r\n- MyBroadband_Availability_no_outline\r\n- MyBroadband_Map\r\n- MyBroadband_Quality\r\n- MyBroadband_Quality_no_outline",
+            "format": "wms",
+            "tracking_summary": {
+              "total": 18,
+              "recent": 3
+            },
+            "last_modified": null,
+            "url_type": null,
+            "mimetype": null,
+            "cache_url": null,
+            "name": "MyBroadband Results - WMS",
+            "created": "2014-11-25T23:00:00.498815",
+            "url": "https://programs.communications.gov.au/geoserver/ows?service=WMS&request=GetCapabilities",
+            "webstore_url": null,
+            "mimetype_inner": null,
+            "position": 1,
+            "revision_id": "b3dea97f-cbaa-4338-8bba-727cc3e83347",
+            "resource_type": null
+          }
+        ],
+        "num_resources": 2,
+        "tags": [
+          {
+            "vocabulary_id": null,
+            "display_name": "NBN",
+            "name": "NBN",
+            "revision_timestamp": "2014-03-11T22:27:32.758797",
+            "state": "active",
+            "id": "c8ef62e3-ecb8-4587-a055-22d1c1e14634"
+          },
+          {
+            "vocabulary_id": null,
+            "display_name": "government",
+            "name": "government",
+            "revision_timestamp": "2014-03-11T22:27:32.758797",
+            "state": "active",
+            "id": "4b32f564-b388-412f-9664-1bf91c47f7b9"
+          }
+        ],
+        "temporal_coverage_from": "Not specified",
+        "language": "English",
+        "tracking_summary": {
+          "total": 357,
+          "recent": 31
+        },
+        "groups": [
+          {
+            "display_name": "Business Support and Regulation",
+            "description": "Formulating policy to regulate and support the private sector, including small business and non-profit organisations. Developing strategies to assist business growth and management. Implementing advocacy programs, providing funding and administering regulatory bodies.\r\n\r\nIncludes components listed at http://agift.naa.gov.au/000411.htm",
+            "image_display_url": "",
+            "title": "Business Support and Regulation",
+            "id": "ada735db-98c9-42cb-8969-dc356ea4281e",
+            "name": "business"
+          }
+        ],
+        "creator_user_id": "288f38a4-8a4f-4f5a-8a1a-a0d89a035bd2",
+        "field_of_research": [],
+        "relationships_as_subject": [],
+        "num_tags": 2,
+        "organization": {
+          "description": "Department of Communications",
+          "created": "2013-05-12T08:23:11.745517",
+          "title": "Department of Communications",
+          "name": "department-of-communications",
+          "revision_timestamp": "2014-10-19T23:26:41.338590",
+          "is_organization": true,
+          "state": "active",
+          "image_url": "20141019-232641.329262deptcommslg.png",
+          "revision_id": "5a3d31f8-afe4-4535-8a6b-048486be4012",
+          "type": "organization",
+          "id": "34f8a6fa-545f-447b-b126-6f8634e13b26",
+          "approval_status": "approved"
+        },
+        "name": "mybroadband",
+        "isopen": true,
+        "url": "",
+        "notes": "The Broadband Availability and Quality Project investigated access and impediments to accessing broadband across the country, and broadband quality in terms of speed capability of the technology.\r\nA report (the Broadband Availability and Quality Report: December 2013) and a website (MyBroadband) were launched by the Minister for Communications on 20 February 2014.\r\nThis data cube is the collation of the results data which are displayed on the MyBroadband website. It is an update to the December 2013 data cube used to generate figures and maps for the Broadband Availability and Quality Report and incorporates updated network coverage information provided by NBN Co.\r\nThe data cube will be periodically updated to include NBN Co rollout coverage and coverage updates from other carriers, and can be accessed here:\r\n[https://www.mybroadband.communications.gov.au/reports.aspx](https://www.mybroadband.communications.gov.au/reports.aspx)",
+        "owner_org": "34f8a6fa-545f-447b-b126-6f8634e13b26",
+        "data_state": "active",
+        "title": "MyBroadband Results",
+        "revision_id": "4f6301bb-eb36-4af8-a429-d7eefbd5a328",
+        "update_freq": "quarterly"
+      }
+    ],
+    "search_facets": {}
+  }
+}
