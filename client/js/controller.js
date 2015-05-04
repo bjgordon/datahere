@@ -20,6 +20,12 @@ app.config(function(uiGmapGoogleMapApiProvider) {
 
 app.controller('DataHereCtrl', function ($scope, $http, uiGmapGoogleMapApi,ngProgress) {
 
+  $scope.search = {
+    address: undefined,
+    id: 0,
+    sources: []
+  };
+
   $scope.onSelectedSourcesChange = function(value) {
     if ($scope.place !== undefined)
     {
@@ -101,35 +107,20 @@ app.controller('DataHereCtrl', function ($scope, $http, uiGmapGoogleMapApi,ngPro
 
     //initialise dom
     $scope.selectedSources = "all";
-    $scope.place = {
-      formatted_address : "foo",
-      geometry: {
-        location: new google.maps.LatLng(-35.2819998, 149.1286843)
-      }
-    };
-
-    $scope.marker = {
-        id: 0,
-        coords: {
-            latitude: $scope.place.geometry.location.lat(),
-            longitude: $scope.place.geometry.location.lng()
-        }
-    };
-
-    // $scope.onSearch();
 
   });
-
-
 
   var getFeatureInfoParams = [
     "REQUEST=GetFeatureInfo", "SERVICE=WMS", "VERSION=1.1.1", "FEATURE_COUNT=10", "INFO_FORMAT=application/json", "EXCEPTIONS=application%2Fvnd.ogc.se_xml"
   ];
 
-
-
-  //onSearch. Setup the sources list, then start the search.
+  //Setup the sources list, then start the search.
   $scope.onSearch = function() {
+
+    $scope.search.id++;
+    ngProgress.reset();
+    $scope.search.address = undefined;
+
     if (!$scope.place)
     {
       console.log('No place object to search');
@@ -144,20 +135,21 @@ app.controller('DataHereCtrl', function ($scope, $http, uiGmapGoogleMapApi,ngPro
 
     ngProgress.start();
 
-    console.log('Searching ' + $scope.place.formatted_address);
+    $scope.search.address = $scope.place.formatted_address;
 
     if ($scope.selectedSources === "recommended")
     {
-      $scope.sources = [];
+      sources = [];
+      $scope.search.sources = sources;
 
-      $scope.sources[$scope.sources.length] = {
+      sources[sources.length] = {
           name: "Commonwealth Electoral Divisions",
           dataset: "federal-electoral-boundaries",
           wms_url: "http://nationalmap.nicta.com.au/proxy/http://geoserver-nm.nicta.com.au/admin_bnds_abs/ows",
           layer_name: "admin_bnds%3ACED_2011_AUST"
         };
 
-      $scope.sources[$scope.sources.length] = {
+        sources[sources.length] = {
           name: "MyBroadband",
           dataset: "mybroadband",
           wms_url: "https://www.mybroadband.communications.gov.au/geoserver/wms",
@@ -168,11 +160,14 @@ app.controller('DataHereCtrl', function ($scope, $http, uiGmapGoogleMapApi,ngPro
     }
     else {
       //get all wms sources via ckan api
-      $scope.sources =[];
-      // url = 'http://www.data.gov.au//api/3/action/package_search?rows=100000&fq=res_format%3awms';
-      url = 'test/package_search.json';
+      $scope.search.sources = undefined;
+      url = 'http://www.data.gov.au//api/3/action/package_search?rows=100000&fq=res_format%3awms';
+      // url = 'test/package_search.json';
       $http.get(url).
         success(function(data, status, headers, config) {
+          if (!$scope.search.sources) {
+            $scope.search.sources = [];
+          }
           console.log('Result count=' + data.result.count + ' from url=' + url);
           for (var i = 0; i < data.result.count; i++)
           {
@@ -193,7 +188,7 @@ app.controller('DataHereCtrl', function ($scope, $http, uiGmapGoogleMapApi,ngPro
               {
                 name += " - " + wms[j].name;
               }
-              $scope.sources[$scope.sources.length] = {
+              $scope.search.sources[$scope.search.sources.length] = {
                   name: name,
                   dataset: pkg.name,
                   wms_url: wms[j].url,
@@ -215,9 +210,9 @@ app.controller('DataHereCtrl', function ($scope, $http, uiGmapGoogleMapApi,ngPro
   //Search each of the sources
   $scope.searchSources = function()
   {
-    $scope.currentSearchNumberComplete = 0;
+    $scope.search.completedCount = 0;
 
-    var progress = $scope.currentSearchNumberComplete / $scope.sources.length;
+    var progress = $scope.search.completedCount / $scope.search.sources.length;
     console.log('Progress=' + progress);
     ngProgress.set(progress);
     var latLng = $scope.place.geometry.location;
@@ -234,6 +229,7 @@ app.controller('DataHereCtrl', function ($scope, $http, uiGmapGoogleMapApi,ngPro
     var maxy = bounds.getNorthEast().lat();
 
     var bbox = minx + "," + miny + "," + maxx + "," + maxy;
+    //todo remove DOM dependency
     var map = document.getElementsByClassName("angular-google-map-container")[0];
     var width = map.offsetWidth;
     var height = map.offsetHeight;
@@ -242,10 +238,9 @@ app.controller('DataHereCtrl', function ($scope, $http, uiGmapGoogleMapApi,ngPro
     var x = Math.floor((lng - bounds.getSouthWest().lng()) * width);
     var y = Math.floor((bounds.getNorthEast().lat() - lat) * height);
 
-    for (var i = 0; i < $scope.sources.length; i++) {
-    // for (var i = 0; i < 2; i++) {
-      var source = $scope.sources[i];
-      $scope.sources[i].state = STATE_WAITING;
+    for (var i = 0; i < $scope.search.sources.length; i++) {
+      var source = $scope.search.sources[i];
+      source.state = STATE_WAITING;
       source.results = null;
       console.log("source.name=" + source.name);
       console.log('wms url=' +source.wms_url);
@@ -257,7 +252,7 @@ app.controller('DataHereCtrl', function ($scope, $http, uiGmapGoogleMapApi,ngPro
       }
 
       var url = source.wms_url;
-console.log("original url=" + url);
+      console.log("original url=" + url);
       //remove anything query parameters so we just have the base url
       var urlparts= url.split('?');
       if (urlparts.length >= 2)
@@ -279,17 +274,28 @@ console.log("original url=" + url);
       console.log('url=' + url);
 
       $http.get(url)
-        .success($scope.onSearchSuccess(source));
+        .success($scope.onSearchSuccess($scope.search.id,source));
     }
   };
 
-  $scope.onSearchSuccess = function (source) {
+  $scope.onSearchSuccess = function (searchId, source) {
     return function(data) {
+      if ($scope.search.id != searchId)
+      {
+        //Current search has changed since this request was made, so
+        //discard the results
+        console.log('Discarding search results for searchid: ' + searchId);
+        return;
+      }
       console.log('onSearchSuccess ' + source.name);
-      $scope.currentSearchNumberComplete++;
-      var progress = $scope.currentSearchNumberComplete / $scope.sources.length * 100;
+      $scope.search.completedCount++;
+      var progress = $scope.search.completedCount / $scope.search.sources.length * 100;
       console.log('Progress=' + progress);
       ngProgress.set(progress);
+      if (progress == 100)
+      {
+        ngProgress.reset();
+      }
 
       if (data.type !== "FeatureCollection") {
         console.log('Ignoring non-GetFeatureInfo response');
