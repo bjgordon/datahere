@@ -35,9 +35,10 @@ app.controller('DataHereCtrl', function ($scope, $http, uiGmapGoogleMapApi,ngPro
 
   $scope.map = {
     center: {
-      latitude: -31.15535,
-      longitude: 142.59933 },
-    zoom: 8,
+      latitude: -27.921,
+      longitude: 133.247 },
+
+    zoom: 3,
     options: {
       panControl: false,
       zoomControl: true,
@@ -106,7 +107,7 @@ app.controller('DataHereCtrl', function ($scope, $http, uiGmapGoogleMapApi,ngPro
     //google maps api loaded
 
     //initialise dom
-    $scope.selectedSources = "all";
+    $scope.selectedSources = "recommended";
 
   });
 
