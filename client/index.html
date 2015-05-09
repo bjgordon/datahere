@@ -100,10 +100,16 @@
         </div>
         <div class="row pull-center" style="color:#ececec; text-shadow: 2px 2px 8px #000000;">
           <div class="col-xs-12">
-            <input type="radio" ng-model="selectedSources" value="all" ng-change='onSelectedSourcesChange(value)'> Search <b>ALL</b> datasets</input>
+            <label>
+              <input type="radio" ng-model="selectedSources" value="all" ng-change='onSelectedSourcesChange(value)'>
+              Search <b>ALL</b> datasets
+            </label>
           </div>
           <div class="col-xs-12">
-            <input type="radio" ng-model="selectedSources" value="recommended" ng-change='onSelectedSourcesChange(value)'> Search recommended datasets (faster)</input>
+            <label>
+              <input type="radio" ng-model="selectedSources" value="recommended" ng-change='onSelectedSourcesChange(value)'>
+              Only recommended datasets (faster)
+            </label>
           </div>
         </div>
       </div>
@@ -180,7 +186,7 @@
               <li>...</li>
               <li>Profit!</li>
             </ol>
-            <p>Made by Brendan Gordon. Contact me on <a href="http://twitter.com/gordcorp">Twitter</a>.</p>
+            <p>Made by Brendan Gordon. You can contact me on <a href="http://twitter.com/gordcorp">Twitter</a>.</p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
