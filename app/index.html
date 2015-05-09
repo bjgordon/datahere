@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="datahereApp">
-
+<html lang="en" ng-app="datahereApp" ng-controller="datahereCtrl">
 <head>
 
   <meta charset="utf-8">
@@ -11,9 +10,10 @@
 
   <title>Data Here</title>
 
-  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+  <!-- build:css /css/site.css -->
+  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
   <link rel="stylesheet" href="bower_components/ngprogress/ngProgress.css">
-
+  <!-- endbuild -->
   <style>
 
     .angular-google-map-container { height: 200px}
@@ -89,7 +89,7 @@
       </nav>
     </div>
   </header>
-  <div class="container" id="content" ng-controller="DataHereCtrl">
+  <div class="container" id="content">
     <section class="section" style="background-image:url('/img/fibre.jpg');background-size:cover;">
       <div class="row">
         <h1 class="pull-center">Search <a href="http://data.gov.au/">data.gov.au</a> by address</h1>
@@ -194,14 +194,17 @@
         </div>
       </div>
     </div>
-    <script src="bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="bower_components/angular/angular.min.js"></script>
-    <script src="bower_components/angular-resource/angular-resource.min.js"></script>
-    <script src="bower_components/lodash/dist/lodash.min.js"></script>
-    <script src="bower_components/angular-google-maps/dist/angular-google-maps.min.js"></script>
-    <script src="bower_components/ngprogress/build/ngProgress.min.js"></script>
+    <!-- build:js /js/app.min.js -->
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-resource/angular-resource.js"></script>
+    <script src="bower_components/lodash/dist/lodash.js"></script>
+    <script src="bower_components/angular-google-maps/dist/angular-google-maps.js"></script>
+    <script src="bower_components/ngprogress/build/ngProgress.js"></script>
     <script src="js/controller.js"></script>
+    <!-- endbuild -->
+
 
 
 </body>

@@ -18,7 +18,7 @@ app.config(function(uiGmapGoogleMapApiProvider) {
     });
 });
 
-app.controller('DataHereCtrl', function ($scope, $http, uiGmapGoogleMapApi,ngProgress) {
+app.controller('datahereCtrl', function ($scope, $http, uiGmapGoogleMapApi,ngProgress) {
 
   $scope.search = {
     address: undefined,
