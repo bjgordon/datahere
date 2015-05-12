@@ -136,13 +136,13 @@
       Searching <span ng-show="selectedSources == 'all'"><a href="http://data.gov.au/dataset?res_format=wms">all<span ng-show="search.sources"> ({{search.sources.length}})</span> datasets</a></span> at {{search.address}}:</div>
     <div ng-repeat="source in search.sources | orderBy:'state'">
       <div class="row span12">
-        <span ng-if="source.state == 1"
+        <span ng-if="source.state == 1" title="This dataset has data at this location"
               class="glyphicon glyphicon-ok"></span>
         <img ng-if="source.state == 2"
-              alt="activity indicator" src="img/ajax-loader.gif" />
-        <span ng-if="source.state == 3"
+              alt="activity indicator" title="Searching dataset at this location" src="img/ajax-loader.gif" />
+        <span ng-if="source.state == 3" title="This dataset has no data at this location"
               class="glyphicon glyphicon-remove"></span>
-        <span ng-if="source.state == 4"
+        <span ng-if="source.state == 4" title="There was a problem searching this dataset"
               class="glyphicon glyphicon-warning-sign"></span>
         <a href="http://data.gov.au/dataset/{{source.dataset}}" target="_blank">{{source.name}}</a></strong>
         <a ng-if="source.state == 1" style="margin-left:30px"
