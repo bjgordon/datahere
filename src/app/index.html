@@ -133,7 +133,7 @@
     </div>
     <pre id='preview' style='display:none'></pre>
     <div ng-show="search.id > 0"><img ng-show="search.sources == undefined" alt="activity indicator" src="img/ajax-loader.gif" />
-      Searching <span ng-show="selectedSources == 'all'"><a href="http://data.gov.au/dataset?res_format=wms">all<span ng-show="search.sources"> ({{search.sources.length}})</span> datasets</a></span> at {{search.address}}:</div>
+      Searching <span ng-show="selectedSources == 'all'"><a href="http://data.gov.au/dataset?res_format=wms">all<span ng-show="search.sources"> (<span ng-bind="search.sources.length"></span>)</span> datasets</a></span> at <span ng-bind="search.address"></span>:</div>
     <div ng-repeat="source in search.sources | orderBy:'state'">
       <div class="row span12">
         <span ng-if="source.state == 1" title="This dataset has data at this location"
