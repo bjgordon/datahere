@@ -5,6 +5,7 @@
 !.elasticbeanstalk/*.global.yml
 
 /dist/*
+datahere.zip
 /node_modules/*
 /bower_components/*
 
