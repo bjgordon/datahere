@@ -16,6 +16,10 @@
   <!-- endbuild -->
   <style>
 
+    [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+      display: none !important;
+    }
+
     .angular-google-map-container { height: 200px}
 
     #searchboxParent{
@@ -132,42 +136,44 @@
       </div>
     </div>
     <pre id='preview' style='display:none'></pre>
-    <div ng-show="search.id > 0"><img ng-show="search.sources == undefined" alt="activity indicator" src="img/ajax-loader.gif" />
-      Searching <span ng-show="selectedSources == 'all'"><a href="http://data.gov.au/dataset?res_format=wms">all<span ng-show="search.sources"> (<span ng-bind="search.sources.length"></span>)</span> datasets</a></span> at <span ng-bind="search.address"></span>:</div>
-    <div ng-repeat="source in search.sources | orderBy:'state'">
-      <div class="row span12">
-        <span ng-if="source.state == 1" title="This dataset has data at this location"
-              class="glyphicon glyphicon-ok"></span>
-        <img ng-if="source.state == 2"
-              alt="activity indicator" title="Searching dataset at this location" src="img/ajax-loader.gif" />
-        <span ng-if="source.state == 3" title="This dataset has no data at this location"
-              class="glyphicon glyphicon-remove"></span>
-        <span ng-if="source.state == 4" title="There was a problem searching this dataset"
-              class="glyphicon glyphicon-warning-sign"></span>
-        <a href="http://data.gov.au/dataset/{{source.dataset}}" target="_blank">{{source.name}}</a></strong>
-        <a ng-if="source.state == 1" style="margin-left:30px"
-          data-toggle="collapse"
-          href="#resultTable{{ $index + 1 }}"
-          aria-expanded="false"
-          aria-controls="collapseExample{{ $index + 1 }}">
-            Show data
-        </a>
+    <div id='results' class='ng-cloak'>
+      <div ng-show="search.id > 0"><img ng-show="search.sources == undefined" alt="activity indicator" src="img/ajax-loader.gif" />
+        Searching <span ng-show="selectedSources == 'all'"><a href="http://data.gov.au/dataset?res_format=wms">all<span ng-show="search.sources"> (<span ng-bind="search.sources.length"></span>)</span> datasets</a></span> at <span ng-bind="search.address"></span>:</div>
+      <div ng-repeat="source in search.sources | orderBy:'state'">
+        <div class="row span12">
+          <span ng-if="source.state == 1" title="This dataset has data at this location"
+                class="glyphicon glyphicon-ok"></span>
+          <img ng-if="source.state == 2"
+                alt="activity indicator" title="Searching dataset at this location" src="img/ajax-loader.gif" />
+          <span ng-if="source.state == 3" title="This dataset has no data at this location"
+                class="glyphicon glyphicon-remove"></span>
+          <span ng-if="source.state == 4" title="There was a problem searching this dataset"
+                class="glyphicon glyphicon-warning-sign"></span>
+          <a href="http://data.gov.au/dataset/{{source.dataset}}" target="_blank">{{source.name}}</a></strong>
+          <a ng-if="source.state == 1" style="margin-left:30px"
+            data-toggle="collapse"
+            href="#resultTable{{ $index + 1 }}"
+            aria-expanded="false"
+            aria-controls="collapseExample{{ $index + 1 }}">
+              Show data
+          </a>
 
-        <div class="collapse" id="resultTable{{ $index + 1 }}" >
-          <table ng-repeat="feature in source.results" class="table table-striped table-bordered table-condensed table-responsive">
-            <thead>
-              <tr>
-                <th scope="col">Field</th>
-                <th scope="col">Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr ng-repeat="(key, value) in feature.properties">
-                <th scope="row" class="dataset-label">{{key}}</th>
-                <td class="dataset-details" property="dc:type">{{value}}</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="collapse" id="resultTable{{ $index + 1 }}" >
+            <table ng-repeat="feature in source.results" class="table table-striped table-bordered table-condensed table-responsive">
+              <thead>
+                <tr>
+                  <th scope="col">Field</th>
+                  <th scope="col">Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="(key, value) in feature.properties">
+                  <th scope="row" class="dataset-label">{{key}}</th>
+                  <td class="dataset-details" property="dc:type">{{value}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
