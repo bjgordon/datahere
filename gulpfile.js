@@ -16,7 +16,7 @@ var gulp        = require('gulp'),
 require('gulp-help')(gulp, {
         description: 'Help listing.'
     });
-    
+
 var del = require('del');
 
 var onError = function(err) {
@@ -25,7 +25,6 @@ var onError = function(err) {
 
 gulp.task('clean', function(cb) {
     del(['dist', 'datahere.zip'], cb);
-    // del(['dist'], cb);
 });
 
 gulp.task('html', function() {
@@ -63,7 +62,7 @@ gulp.task('fonts', function() {
 });
 
 gulp.task('server.js', function() {
-  return gulp.src('src/server.js')
+  return gulp.src(['src/server.js', 'package.json'])
     .pipe(gulp.dest('dist'));
 });
 
