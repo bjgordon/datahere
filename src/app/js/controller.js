@@ -22,6 +22,10 @@ app.config(function(uiGmapGoogleMapApiProvider) {
 });
 
 app.controller('datahereCtrl', function ($scope, $http, uiGmapGoogleMapApi,ngProgress) {
+  $scope.config = {
+    proxy: 'http://nationalmap.nicta.com.au/proxy/',
+    serversToProxy : ['http://maps.aims.gov.au/geoserver/wms']
+  };
 
   $scope.search = {
     address: undefined,
@@ -245,6 +249,15 @@ app.controller('datahereCtrl', function ($scope, $http, uiGmapGoogleMapApi,ngPro
         break;
       }
 
+      for (var j = 0; j < $scope.config.serversToProxy.length; j++) {
+        var server = $scope.config.serversToProxy[j];
+        if (source.wms_url.toLowerCase().indexOf(server.toLowerCase()) === 0) {
+          console.log('Proxying ' + $scope.wms_url);
+          source.wms_url = $scope.config.proxy + source.wms_url;
+          break;
+        }
+      }
+
       var url = source.wms_url;
       console.log('original url=' + url);
       //remove anything query parameters so we just have the base url
@@ -268,12 +281,32 @@ app.controller('datahereCtrl', function ($scope, $http, uiGmapGoogleMapApi,ngPro
       console.log('url=' + url);
 
       $http.get(url)
-        .success($scope.onSearchSuccess($scope.search.id,source));
+        .success($scope.onSearchSuccess($scope.search.id,source))
+        .error($scope.onSearchError(source));
+
     }
+  };
+
+  $scope.onSearchComplete = function() {
+    $scope.search.completedCount++;
+    var progress = $scope.search.completedCount / $scope.search.sources.length * 100;
+    console.log('Progress=' + progress);
+    ngProgress.set(progress);
+    if (progress === 100)
+    {
+      ngProgress.reset();
+    }
+  };
+  $scope.onSearchError = function(source) {
+    return function(data, status, headers, config) {
+      source.state = STATE_FAILED;
+      $scope.onSearchComplete();
+    };
   };
 
   $scope.onSearchSuccess = function (searchId, source) {
     return function(data) {
+
       if ($scope.search.id !== searchId)
       {
         //Current search has changed since this request was made, so
@@ -281,18 +314,12 @@ app.controller('datahereCtrl', function ($scope, $http, uiGmapGoogleMapApi,ngPro
         console.log('Discarding search results for searchid: ' + searchId);
         return;
       }
-      console.log('onSearchSuccess ' + source.name);
-      $scope.search.completedCount++;
-      var progress = $scope.search.completedCount / $scope.search.sources.length * 100;
-      console.log('Progress=' + progress);
-      ngProgress.set(progress);
-      if (progress === 100)
-      {
-        ngProgress.reset();
-      }
+      $scope.onSearchComplete();
+
+      //console.log('onSearchSuccess ' + source.name);
 
       if (data.type !== 'FeatureCollection') {
-        console.log('Ignoring non-GetFeatureInfo response');
+        console.log('Ignoring non-GetFeatureInfo response from ' + source.name);
         source.state = STATE_FAILED;
         return;
       }
