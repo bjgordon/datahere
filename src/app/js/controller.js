@@ -21,7 +21,15 @@ app.config(function(uiGmapGoogleMapApiProvider) {
     });
 });
 
-app.controller('datahereCtrl', function ($scope, $http, uiGmapGoogleMapApi,ngProgress) {
+app.config(function($logProvider) {
+    //Enable cross domain calls
+    $logProvider.debugEnabled(false)
+});
+
+
+app.controller('datahereCtrl', function ($scope, $http, $log, uiGmapGoogleMapApi,ngProgress) {
+  $scope.log = $log;
+
   $scope.config = {
     proxy: 'http://nationalmap.nicta.com.au/proxy/',
     serversToProxy : ['http://maps.aims.gov.au/geoserver/wms']
@@ -67,7 +75,7 @@ app.controller('datahereCtrl', function ($scope, $http, uiGmapGoogleMapApi,ngPro
     places_changed: function (searchBox) {
         var place = searchBox.getPlaces();
         if (!place || place === 'undefined' || place.length === 0) {
-            console.log('no place data :(');
+            $scope.log.info('no place data :(');
             $scope.place = undefined;
             return;
         }
@@ -120,13 +128,13 @@ app.controller('datahereCtrl', function ($scope, $http, uiGmapGoogleMapApi,ngPro
 
     if (!$scope.place)
     {
-      console.log('No place object to search');
+      $scope.log.info('No place object to search');
       return;
     }
 
     if (!$scope.place.geometry || !$scope.place.geometry.location)
     {
-      console.log('Place didnt have geometry/location to search at');
+      $scope.log.info('Place didnt have geometry/location to search at');
       return;
     }
 
@@ -164,11 +172,10 @@ app.controller('datahereCtrl', function ($scope, $http, uiGmapGoogleMapApi,ngPro
           if (!$scope.search.sources) {
             $scope.search.sources = [];
           }
-          console.log('Result count=' + data.result.count + ' from url=' + url);
+          $scope.log.debug('Result count=' + data.result.count + ' from url=' + url);
           for (var i = 0; i < data.result.count; i++)
           {
             var pkg = data.result.results[i];
-            console.log('title=' + pkg.title);
             var wms = [];
             var count = 0;
             for (var j = 0; j < pkg.num_resources; j++) {
@@ -196,9 +203,8 @@ app.controller('datahereCtrl', function ($scope, $http, uiGmapGoogleMapApi,ngPro
           $scope.searchSources();
 
         }).
-        // error(function(data, status, headers) {
         error(function(data, status) {
-          console.log(status + ' - unable to get list of sources from data.gov.au: ');
+          $scope.log.error(status + ' - unable to get list of sources from data.gov.au: ');
           //todo show error
         });
 
@@ -211,7 +217,7 @@ app.controller('datahereCtrl', function ($scope, $http, uiGmapGoogleMapApi,ngPro
     $scope.search.completedCount = 0;
 
     var progress = $scope.search.completedCount / $scope.search.sources.length;
-    console.log('Progress=' + progress);
+    $scope.log.debug('Progress=' + progress);
     ngProgress.set(progress);
     var latLng = $scope.place.geometry.location;
     var lat = latLng.lat();
@@ -240,33 +246,33 @@ app.controller('datahereCtrl', function ($scope, $http, uiGmapGoogleMapApi,ngPro
       var source = $scope.search.sources[i];
       source.state = STATE_WAITING;
       source.results = null;
-      console.log('source.name=' + source.name);
-      console.log('wms url=' +source.wms_url);
+      $scope.log.debug('source.name=' + source.name);
+      $scope.log.debug('wms url=' +source.wms_url);
 
       if (source.wms_url === undefined)
       {
-        console.log('ignoring undefined source.wms_url');
+        $scope.log.info('ignoring undefined source.wms_url');
         break;
       }
 
       for (var j = 0; j < $scope.config.serversToProxy.length; j++) {
         var server = $scope.config.serversToProxy[j];
         if (source.wms_url.toLowerCase().indexOf(server.toLowerCase()) === 0) {
-          console.log('Proxying ' + $scope.wms_url);
+          $scope.log.debug('Proxying ' + $scope.wms_url);
           source.wms_url = $scope.config.proxy + source.wms_url;
           break;
         }
       }
 
       var url = source.wms_url;
-      console.log('original url=' + url);
+      $scope.log.debug('original url=' + url);
       //remove anything query parameters so we just have the base url
       var urlparts= url.split('?');
       if (urlparts.length >= 2)
       {
         url = urlparts[0];
       }
-      console.log('fixed url=' + url);
+      $scope.log.debug('fixed url=' + url);
 
       url += '?' + getFeatureInfoParams.join('&');
       url += '&layers=' + source.layer_name;
@@ -278,7 +284,7 @@ app.controller('datahereCtrl', function ($scope, $http, uiGmapGoogleMapApi,ngPro
       url += '&x=' + Math.floor(x);
       url += '&y=' + Math.floor(y);
 
-      console.log('url=' + url);
+      $scope.log.debug('url=' + url);
 
       $http.get(url)
         .success($scope.onSearchSuccess($scope.search.id,source))
@@ -290,7 +296,7 @@ app.controller('datahereCtrl', function ($scope, $http, uiGmapGoogleMapApi,ngPro
   $scope.onSearchComplete = function() {
     $scope.search.completedCount++;
     var progress = $scope.search.completedCount / $scope.search.sources.length * 100;
-    console.log('Progress=' + progress);
+    $scope.log.debug('Progress=' + progress);
     ngProgress.set(progress);
     if (progress === 100)
     {
@@ -311,27 +317,27 @@ app.controller('datahereCtrl', function ($scope, $http, uiGmapGoogleMapApi,ngPro
       {
         //Current search has changed since this request was made, so
         //discard the results
-        console.log('Discarding search results for searchid: ' + searchId);
+        $scope.log.debug('Discarding search results for searchid: ' + searchId);
         return;
       }
       $scope.onSearchComplete();
 
-      //console.log('onSearchSuccess ' + source.name);
+      $scope.log.debug('onSearchSuccess ' + source.name);
 
       if (data.type !== 'FeatureCollection') {
-        console.log('Ignoring non-GetFeatureInfo response from ' + source.name);
+        $scope.log.debug('Ignoring non-GetFeatureInfo response from ' + source.name);
         source.state = STATE_FAILED;
         return;
       }
 
       if (data.features.length === 0)
       {
-        console.log('Response contained no features');
+        $scope.log.debug('Response contained no features');
         source.state = STATE_NOT_FOUND;
         return;
       }
 
-      console.log('GetFeatureInfo OK ' + source.name);
+      $scope.log.debug('GetFeatureInfo OK ' + source.name);
       source.state = STATE_FOUND;
       source.results = data.features;
 
