@@ -73,5 +73,5 @@ gulp.task('zip', function() {
 });
 
 gulp.task('default', ['clean'], function() {
-  gulp.start('jshint', 'img', 'fonts', 'html', 'server.js', 'zip');
+  gulp.start('jshint', 'img', 'fonts', 'html', 'server.js');
 });
