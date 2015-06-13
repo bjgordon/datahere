@@ -1,5 +1,5 @@
 'use strict';
-/*global console, document, google */
+/*global console, document, window, google */
 
 var app = angular.module('datahereApp', ['uiGmapgoogle-maps', 'ngProgress']);
 
@@ -11,6 +11,7 @@ var STATE_FAILED = 4;
 app.config(function($httpProvider) {
     //Enable cross domain calls
     $httpProvider.defaults.useXDomain = true;
+    delete $httpProvider.defaults.headers.common['X-Requested-With'];
 });
 
 app.config(function(uiGmapGoogleMapApiProvider) {
@@ -22,8 +23,12 @@ app.config(function(uiGmapGoogleMapApiProvider) {
 });
 
 app.config(function($logProvider) {
-    //Enable cross domain calls
-    $logProvider.debugEnabled(false)
+  if (window.location.host.match(/localhost/)) {
+    $logProvider.debugEnabled(false);
+  }
+  else {
+    $logProvider.debugEnabled(false);
+  }
 });
 
 
@@ -32,7 +37,17 @@ app.controller('datahereCtrl', function ($scope, $http, $log, uiGmapGoogleMapApi
 
   $scope.config = {
     proxy: 'http://nationalmap.nicta.com.au/proxy/',
-    serversToProxy : ['http://maps.aims.gov.au/geoserver/wms']
+    serversToProxy : ['http://maps.aims.gov.au/geoserver/wms',
+        'http://www.data.gov.au',
+        'https://www.data.gov.au',
+        'http://data.gov.au',
+        'https://data.gov.au',
+        'http://geoserver-nm.nicta.com.au',
+        'http://services.aad.gov.au',
+        'https://sarigdata.pir.sa.gov.au/geoserver',
+        'http://ga.gov.au',
+        'http://sentinel.ga.gov.au/geoserver'
+      ]
   };
 
   $scope.search = {
@@ -156,8 +171,15 @@ app.controller('datahereCtrl', function ($scope, $http, $log, uiGmapGoogleMapApi
         $scope.search.sources[$scope.search.sources.length] = {
           name: 'MyBroadband',
           dataset: 'mybroadband',
-          wms_url: 'https://www.mybroadband.communications.gov.au/geoserver/wms',
-          layer_name: 'DistributionArea'
+          wms_url: 'https://programs.communications.gov.au/geoserver/wms',
+          layer_name: 'public:MyBroadband_Map'
+        };
+
+        $scope.search.sources[$scope.search.sources.length] = {
+          name: 'Taxation Statistics 2011-12',
+          dataset: 'taxation-statistics-2011-12',
+          wms_url: 'http://data.gov.au/geoserver/taxation-statistics-2011-12/wms',
+          layer_name: '95d9e550_8b36_4273_8df7_2b76c140e73a'
         };
 
         $scope.searchSources();
@@ -165,7 +187,7 @@ app.controller('datahereCtrl', function ($scope, $http, $log, uiGmapGoogleMapApi
     else {
       //get all wms sources via ckan api
       $scope.search.sources = undefined;
-      var url = 'http://www.data.gov.au//api/3/action/package_search?rows=100000&fq=res_format%3awms';
+      var url = 'http://nationalmap.nicta.com.au/proxy/http://www.data.gov.au//api/3/action/package_search?rows=100000&fq=res_format%3awms';
       // url = 'test/package_search.json';
       $http.get(url).
         success(function(data) {
@@ -180,7 +202,7 @@ app.controller('datahereCtrl', function ($scope, $http, $log, uiGmapGoogleMapApi
             var count = 0;
             for (var j = 0; j < pkg.num_resources; j++) {
               var r = pkg.resources[j];
-              if (r.format === 'wms') {
+              if (r.format !== undefined && r.format.toLowerCase() === 'wms') {
                 count++;
                 wms[wms.length] = {name: r.name, url: r.url, wms_layer: r.wms_layer};
               }
