@@ -24,7 +24,7 @@ app.config(function(uiGmapGoogleMapApiProvider) {
 
 app.config(function($logProvider) {
   if (window.location.host.match(/localhost/)) {
-    $logProvider.debugEnabled(false);
+    $logProvider.debugEnabled(true);
   }
   else {
     $logProvider.debugEnabled(false);
@@ -187,7 +187,7 @@ app.controller('datahereCtrl', function ($scope, $http, $log, uiGmapGoogleMapApi
     else {
       //get all wms sources via ckan api
       $scope.search.sources = undefined;
-      var url = 'http://nationalmap.nicta.com.au/proxy/http://www.data.gov.au//api/3/action/package_search?rows=100000&fq=res_format%3awms';
+      var url = $scope.config.proxy + 'http://www.data.gov.au//api/3/action/package_search?rows=100000&fq=res_format%3awms';
       // url = 'test/package_search.json';
       $http.get(url).
         success(function(data) {
