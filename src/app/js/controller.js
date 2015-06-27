@@ -36,7 +36,7 @@ app.controller('datahereCtrl', function ($scope, $http, $log, uiGmapGoogleMapApi
   $scope.log = $log;
 
   $scope.config = {
-    proxy: 'http://nationalmap.nicta.com.au/proxy/',
+    proxy: 'http://nationalmap.gov.au/proxy/',
     serversToProxy : ['http://maps.aims.gov.au/geoserver/wms',
         'http://www.data.gov.au',
         'https://www.data.gov.au',
@@ -164,7 +164,7 @@ app.controller('datahereCtrl', function ($scope, $http, $log, uiGmapGoogleMapApi
       $scope.search.sources[$scope.search.sources.length] = {
           name: 'Commonwealth Electoral Divisions',
           dataset: 'federal-electoral-boundaries',
-          wms_url: 'http://nationalmap.nicta.com.au/proxy/http://geoserver-nm.nicta.com.au/admin_bnds_abs/ows',
+          wms_url: 'http://nationalmap.gov.au/proxy/http://geoserver-nm.nicta.com.au/admin_bnds_abs/ows',
           layer_name: 'admin_bnds%3ACED_2011_AUST'
         };
 
