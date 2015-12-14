@@ -1,5 +1,5 @@
 'use strict';
-/*global console, document, window, google */
+/*global document, window, google */
 
 var app = angular.module('datahereApp', ['uiGmapgoogle-maps', 'ngProgress']);
 
@@ -325,7 +325,7 @@ app.controller('datahereCtrl', function ($scope, $http, $log, uiGmapGoogleMapApi
     }
   };
   $scope.onSearchError = function(source) {
-    return function(data, status, headers, config) {
+    return function() {
       source.state = STATE_FAILED;
       $scope.onSearchComplete();
     };
