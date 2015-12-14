@@ -172,7 +172,7 @@ app.controller('datahereCtrl', function ($scope, $http, $log, uiGmapGoogleMapApi
           name: 'MyBroadband',
           dataset: 'mybroadband',
           wms_url: 'https://programs.communications.gov.au/geoserver/wms',
-          layer_name: 'public:MyBroadband_Map'
+          layer_name: 'mybroadband:MyBroadband_Map'
         };
 
         $scope.search.sources[$scope.search.sources.length] = {
