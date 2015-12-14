@@ -37,17 +37,13 @@ app.controller('datahereCtrl', function ($scope, $http, $log, uiGmapGoogleMapApi
 
   $scope.config = {
     proxy: 'http://nationalmap.gov.au/proxy/',
-    serversToProxy : ['http://maps.aims.gov.au/geoserver/wms',
-        'http://www.data.gov.au',
-        'https://www.data.gov.au',
-        'http://data.gov.au',
-        'https://data.gov.au',
-        'http://geoserver-nm.nicta.com.au',
-        'http://services.aad.gov.au',
-        'https://sarigdata.pir.sa.gov.au/geoserver',
-        'http://ga.gov.au',
-        'http://sentinel.ga.gov.au/geoserver'
-      ]
+    corsDomains: ['corsproxy.com',
+        'programs.communications.gov.au',
+        'www.asris.csiro.au',
+        'mapsengine.google.com',
+        's3-ap-southeast-2.amazonaws.com',
+        'data.melbourne.vic.gov.au',
+        'data.act.gov.au']
   };
 
   $scope.search = {
@@ -164,7 +160,7 @@ app.controller('datahereCtrl', function ($scope, $http, $log, uiGmapGoogleMapApi
       $scope.search.sources[$scope.search.sources.length] = {
           name: 'Commonwealth Electoral Divisions',
           dataset: 'federal-electoral-boundaries',
-          wms_url: 'http://nationalmap.gov.au/proxy/http://geoserver-nm.nicta.com.au/admin_bnds_abs/ows',
+          wms_url: 'http://geoserver-nm.nicta.com.au/admin_bnds_abs/ows',
           layer_name: 'admin_bnds%3ACED_2011_AUST'
         };
 
@@ -276,18 +272,22 @@ app.controller('datahereCtrl', function ($scope, $http, $log, uiGmapGoogleMapApi
         break;
       }
 
-      for (var j = 0; j < $scope.config.serversToProxy.length; j++) {
-        var server = $scope.config.serversToProxy[j];
-        if (source.wms_url.toLowerCase().indexOf(server.toLowerCase()) === 0) {
-          $scope.log.debug('Proxying ' + $scope.wms_url);
-          source.wms_url = $scope.config.proxy + source.wms_url;
+      var isCors = false;
+      for (var j = 0; j < $scope.config.corsDomains.length; j++) {
+        var corsDomain = $scope.config.corsDomains[j].toLowerCase();
+        if (source.wms_url.toLowerCase().indexOf(corsDomain) !== -1) {
+          isCors = true;
           break;
         }
       }
 
+      if (!isCors) {
+        source.wms_url = $scope.config.proxy + source.wms_url;
+      }
+
       var url = source.wms_url;
       $scope.log.debug('original url=' + url);
-      //remove anything query parameters so we just have the base url
+      //remove any query parameters so we just have the base url
       var urlparts= url.split('?');
       if (urlparts.length >= 2)
       {
