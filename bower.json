@@ -1,17 +1,12 @@
 {
-  'name': 'data-here',
-  'description': 'Data.gov.au Here',
-  'version': '0.0.0',
-  'homepage': 'http://datahere.gordcorp.com',
-  'repository': 'https://bitbucket.org/bjgordon/datahere'
-  'private': true,
-  'dependencies': {
-    'angular': '~1.3.0',
-    'angular-mocks': '~1.3.0',
-    'bootstrap': '~3.1.1',
-    'angular-route': '~1.3.0',
-    'angular-resource': '~1.3.0',
-    'angular-google-maps': '~2.0.9',
-    'ngprogress': '~1.0.7'
+  "name": "datahere",
+  "dependencies": {
+    "angular": "~1.3.0",
+    "angular-mocks": "~1.3.0",
+    "bootstrap": "~3.1.1",
+    "angular-route": "~1.3.0",
+    "angular-resource": "~1.3.0",
+    "angular-google-maps": "~2.0.9",
+    "ngprogress": "~1.0.7"
   }
 }
