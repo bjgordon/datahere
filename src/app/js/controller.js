@@ -187,8 +187,7 @@ app.controller('datahereCtrl', function ($scope, $http, $log, uiGmapGoogleMapApi
     else {
       //get all wms sources via ckan api
       $scope.search.sources = undefined;
-      var url = $scope.config.proxy + 'http://www.data.gov.au//api/3/action/package_search?rows=100000&fq=res_format%3awms';
-      // url = 'test/package_search.json';
+      var url = $scope.config.proxy + 'http://www.data.gov.au//api/3/action/package_search?rows=100000&fq=+(res_format%3awms%20OR%20res_format%3aWMS)';
       $http.get(url).
         success(function(data) {
           if (!$scope.search.sources) {
