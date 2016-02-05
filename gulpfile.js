@@ -10,7 +10,8 @@ var gulp        = require('gulp'),
     notify      = require('gulp-notify'),
     jshint      = require('gulp-jshint'),
     plumber     = require('gulp-plumber'),
-    zip = require('gulp-zip');
+    zip = require('gulp-zip'),
+    deploy = require('gulp-gh-pages');
 
 
 require('gulp-help')(gulp, {
@@ -70,6 +71,14 @@ gulp.task('zip', function() {
   return gulp.src('dist/**')
     .pipe(zip('datahere.zip'))
     .pipe(gulp.dest('.'));
+});
+
+/**
+ * Push build to gh-pages
+ */
+gulp.task('deploy', function () {
+  return gulp.src('./dist/app/**/*')
+    .pipe(deploy());
 });
 
 gulp.task('default', ['clean'], function() {
