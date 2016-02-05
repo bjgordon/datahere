@@ -11,7 +11,8 @@ var gulp        = require('gulp'),
     jshint      = require('gulp-jshint'),
     plumber     = require('gulp-plumber'),
     zip = require('gulp-zip'),
-    deploy = require('gulp-gh-pages');
+    deploy = require('gulp-gh-pages'),
+    fs = require('fs');
 
 
 require('gulp-help')(gulp, {
@@ -73,10 +74,14 @@ gulp.task('zip', function() {
     .pipe(gulp.dest('.'));
 });
 
+gulp.task('cname', function() {
+  fs.writeFileSync('dist/app/CNAME', 'datahere.gordcorp.com');
+});
+
 /**
  * Push build to gh-pages
  */
-gulp.task('deploy', function () {
+gulp.task('deploy',['cname'], function () {
   return gulp.src('./dist/app/**/*')
     .pipe(deploy());
 });
